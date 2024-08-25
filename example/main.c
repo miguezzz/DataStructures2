@@ -18,7 +18,7 @@ void insere_5_funcionarios(FILE *out) {
     Funcionario *f4 = funcionario(4, "Marcelo", "333.333.333-33", "03/03/1990", 1500);
     salva(f4, out);
     free(f4);
-    Funcionario *f5 = funcionario(5, "Silvia", "444.444.444-44", "04/04/1980", 900);
+    Funcionario *f5 = funcionario(5, "Marina", "444.444.444-44", "04/04/1980", 900);
     salva(f5, out);
     free(f5);       
 }
