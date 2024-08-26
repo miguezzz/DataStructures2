@@ -42,3 +42,14 @@ Agencia *le_ag(FILE *in) {
     
     return ag;
 }
+
+void le_todas_ag(FILE *in) {
+
+    Agencia *f;
+    while((f = le_ag(in)) != NULL) {
+        printf("\n");
+        imprime_ag(f);
+        free(f);
+    }
+    
+}
