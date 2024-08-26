@@ -71,7 +71,7 @@ int main(int argc, char** argv) {
                 break;
 
             case 3:
-                Agencia *in;
+                FILE *in;
                 in = fopen("agencias.dat", "rb");
 
                 printf("Listagem de todas as agências:\n");
