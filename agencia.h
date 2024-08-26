@@ -24,6 +24,9 @@ void salva_ag(Agencia *ag, FILE *out);
 // Retorna um ponteiro para agencia lida do arquivo
 Agencia *le_ag(FILE *in);
 
+// Le todas as agencias
+void le_todas_ag(FILE *in);
+
 // Retorna tamanho da agencia em bytes
 int tamanho();
 
