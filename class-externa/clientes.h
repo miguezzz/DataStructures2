@@ -16,6 +16,8 @@ Cliente *criaCliente(int cod_cliente, char *nome, char *data_nascimento, int con
 
 void salvaCliente(Cliente *c, FILE *out);
 
+void leClientes(FILE *in);
+
 //int menor_chave(Registro registros[], int tamanho);
 
 void selecaoSubst(FILE *in, FILE *out);

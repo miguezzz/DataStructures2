@@ -239,6 +239,8 @@ int main (void) {
         free(segundo);
     }
 
+    leClientes(entrada);
+
     // selecaoSubst(entrada, saida);
 
     fclose(entrada);

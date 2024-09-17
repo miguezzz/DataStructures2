@@ -53,6 +53,16 @@ Cliente *carregaCliente(FILE *in) {
     return c;
 }
 
+void leClientes(FILE *in) {
+    printf("\n\nLendo funcionários do arquivo...\n\n");
+    rewind(in);
+    Cliente *c;
+    while ((c = carregaCliente(in)) != NULL) {
+        imprimeCliente(c);
+        free(c);
+    }
+}
+
 // Função para imprimir os dados do cliente
 void imprimeCliente(Cliente *c) {
     
