@@ -9,10 +9,14 @@ typedef struct cliente {
     int cod_cliente;
     char nome[50];
     char data_nascimento[20]; // DD/MM/AAAA
-    int congelado;
 } Cliente;
 
-Cliente *criaCliente(int cod_cliente, char *nome, char *data_nascimento, int congelado);
+typedef struct registro {
+    Cliente *cliente;
+    int congelado;
+} Registro;
+
+Cliente *criaCliente(int cod_cliente, char *nome, char *data_nascimento);
 
 void salvaCliente(Cliente *c, FILE *out);
 

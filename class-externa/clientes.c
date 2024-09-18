@@ -7,14 +7,14 @@
 #define M_REGISTROS 6
 
 // Cria uma conta corrente. Lembrar de usar free();
-Cliente *criaCliente(int cod_cliente, char *nome, char *data_nascimento, int congelado) {
+Cliente *criaCliente(int cod_cliente, char *nome, char *data_nascimento) {
 
     Cliente *c = (Cliente *) malloc(sizeof(Cliente));
+    if (c) memset(c, 0, sizeof(Cliente));
 
     c->cod_cliente = cod_cliente;
     strcpy(c->nome, nome);
     strcpy(c->data_nascimento, data_nascimento);
-    c->congelado = congelado;
 
     return c;
 }
@@ -27,7 +27,6 @@ void salvaCliente(Cliente *c, FILE *out) {
     }
     fwrite(c->nome, sizeof(char), 50, out);
     fwrite(c->data_nascimento, sizeof(char), 20, out);
-    fwrite(&c->congelado, sizeof(int), 1, out);
 }
 
 // Função para carregar clientes em memória
@@ -41,23 +40,19 @@ Cliente *carregaCliente(FILE *in) {
         free(c);
         return NULL; // Falha na leitura do cod_cliente
     }
-    if (fread(c->nome, sizeof(char), sizeof(c->nome), in) != sizeof(c->nome)) {
-        free(c);
-        return NULL; // Falha na leitura do nome
-    }
-    if (fread(c->data_nascimento, sizeof(char), sizeof(c->data_nascimento), in) != sizeof(c->data_nascimento)) {
-        free(c);
-        return NULL; // Falha na leitura da data de nascimento
-    }
-
+    //printf("-------%d", sizeof(char) * sizeof(c->nome));
+    fread(c->nome, sizeof(char), sizeof(c->nome), in);
+    fread(c->data_nascimento, sizeof(char), sizeof(c->data_nascimento), in);
     return c;
 }
 
 void leClientes(FILE *in) {
     printf("\n\nLendo funcionários do arquivo...\n\n");
-    rewind(in);
+    //rewind(in);
+    int contador = 0;
     Cliente *c;
     while ((c = carregaCliente(in)) != NULL) {
+        printf("%d", ++contador);
         imprimeCliente(c);
         free(c);
     }
@@ -155,6 +150,5 @@ void imprimeCliente(Cliente *c) {
 int tamanho() {
     return sizeof(int) + // conta->cod_cliente
             sizeof(char) * 50 + // conta->nome
-            sizeof(char) * 20 + // conta->nasc
-            sizeof(int);
+            sizeof(char) * 20;// conta->nasc
 }
