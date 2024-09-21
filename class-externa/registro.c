@@ -10,7 +10,10 @@ Registro *carregaRegistro(FILE *in) {
         return NULL; // Falha ao alocar memória
     }
 
-    fread(&r->cliente->cod_cliente, sizeof(int), 1, in);
+    if (fread(&r->cliente->cod_cliente, sizeof(int), 1, in) < 1) {
+        free(r);
+        return NULL;
+    }
     fread(r->cliente->nome, sizeof(char), sizeof(r->cliente->nome), in);
     fread(r->cliente->data_nascimento, sizeof(char), sizeof(r->cliente->data_nascimento), in);
 
