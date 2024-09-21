@@ -48,7 +48,7 @@ void leClientes(FILE *in) {
     int contador = 0;
     Cliente *c;
     while ((c = carregaCliente(in)) != NULL) {
-        printf("%d", ++contador);
+        printf("%d\n", ++contador);
         imprimeCliente(c);
         free(c);
     }
@@ -67,21 +67,6 @@ void imprimeCliente(Cliente *c) {
     printf("\nData de nascimento: %s", c->data_nascimento);
     printf("\n**********************************************\n\n");
 }
-
-// Função para encontrar o índice do menor cliente não congelado
-// int menor_chave(Registro registros[], int tamanho) {
-
-//     int menor = INT_MAX;
-//     int indice = -1;
-
-//     for (int i = 0; i < tamanho; i++) {
-//         if (!registros[i].congelado && registros[i].cliente->cod_cliente < menor) {
-//             menor = registros[i].cliente->cod_cliente;
-//             indice = i;
-//         }
-//     }
-//     return indice;
-// }
 
 // Implementação da seleção com substituição
 // void selecaoSubst(FILE *in, FILE *out) {

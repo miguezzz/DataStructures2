@@ -1,4 +1,7 @@
 #include "clientes.h"
+#include "registro.h"
+
+#define TAMANHO_M 6
 
 int main (void) {
 
@@ -218,7 +221,6 @@ int main (void) {
     salvaCliente(c53, arquivo);
     free(c53);
 
-
     fclose(arquivo);
 
     FILE *entrada = fopen("clientes.dat", "rb");
@@ -227,27 +229,30 @@ int main (void) {
         return 1;
     }
 
-//    rewind(entrada);
-
 //     Cliente *primeiro = carregaCliente(entrada);
 //     imprimeCliente(primeiro);
 //     free(primeiro);
 
-//     //fseek(entrada, tamanho(), SEEK_SET);
 //     Cliente *segundo = carregaCliente(entrada);
 //     if (segundo != NULL) {
 //         imprimeCliente(segundo);
 //         free(segundo);
 //     }
 
-//    // fseek(entrada, tamanho() * 2, SEEK_SET);
-//     Cliente *terceiro = carregaCliente(entrada);
-//     if (terceiro != NULL) {
-//         imprimeCliente(terceiro);
-//         free(terceiro);
-//     }
-
     leClientes(entrada);
+
+    Registro registros[TAMANHO_M];
+
+    rewind(entrada);
+    for (int i = 0; i < TAMANHO_M; i++) {
+        registros[i].cliente = carregaCliente(entrada);
+        registros[i].congelado = 0;
+        printf("imprimindo...\n");
+        imprimeCliente(registros[i].cliente);
+    }
+
+    int indice_menor_chave = menorChave(registros, TAMANHO_M);
+    printf("menor chave é %d", registros[indice_menor_chave].cliente->cod_cliente);
 
     // selecaoSubst(entrada, saida);
 

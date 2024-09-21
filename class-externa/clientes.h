@@ -13,18 +13,11 @@ typedef struct cliente {
     char data_nascimento[20]; // DD/MM/AAAA
 } Cliente;
 
-typedef struct registro {
-    Cliente *cliente;
-    int congelado;
-} Registro;
-
 Cliente *criaCliente(int cod_cliente, char *nome, char *data_nascimento);
 
 void salvaCliente(Cliente *c, FILE *out);
 
 void leClientes(FILE *in);
-
-//int menor_chave(Registro registros[], int tamanho);
 
 void selecaoSubst(FILE *in, FILE *out);
 
