@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdarg.h>
+#include <limits.h>
 
 typedef struct cliente {
     int cod_cliente;

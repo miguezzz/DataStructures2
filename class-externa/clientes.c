@@ -1,8 +1,4 @@
 #include "clientes.h"
-#include <string.h>
-#include <stdlib.h>
-#include <stdarg.h>
-#include <limits.h>
 
 #define M_REGISTROS 6
 
