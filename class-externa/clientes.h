@@ -23,8 +23,6 @@ void selecaoSubst(FILE *in, FILE *out);
 
 Cliente *carregaCliente(FILE *in);
 
-// void carrega_m_clientes(FILE *in);
-
 void imprimeCliente();
 
 int tamanho();

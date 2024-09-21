@@ -43,7 +43,7 @@ Cliente *carregaCliente(FILE *in) {
 }
 
 void leClientes(FILE *in) {
-    printf("\n\nLendo funcionários do arquivo...\n\n");
+    printf("\n\nLendo clientes do arquivo...\n\n");
     //rewind(in);
     int contador = 0;
     Cliente *c;

@@ -223,6 +223,9 @@ int main (void) {
 
     fclose(arquivo);
 
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // abre o arquivo para leitura
     FILE *entrada = fopen("clientes.dat", "rb");
     if (entrada == NULL) {
         printf("Erro ao abrir o arquivo de entrada.\n");
@@ -241,9 +244,11 @@ int main (void) {
 
     leClientes(entrada);
 
+    //cria um vetor de registros de tamanho M
     Registro registros[TAMANHO_M];
 
     rewind(entrada);
+    // carrega M registros no vetor
     for (int i = 0; i < TAMANHO_M; i++) {
         registros[i].cliente = carregaCliente(entrada);
         registros[i].congelado = 0;
@@ -251,11 +256,24 @@ int main (void) {
         imprimeCliente(registros[i].cliente);
     }
 
+    // calcula a menor chave dentre os registros no vetor e a imprime
     int indice_menor_chave = menorChave(registros, TAMANHO_M);
     printf("menor chave é %d", registros[indice_menor_chave].cliente->cod_cliente);
 
-    // selecaoSubst(entrada, saida);
+    FILE *saida = fopen("part1.dat", "w+b");
+    if (entrada == NULL) {
+        printf("Erro ao abrir o arquivo de entrada.\n");
+        return 1;
+    }
 
+    gravaMenor(&registros[indice_menor_chave], saida);
+
+    rewind(saida);
+    leRegistros(saida);
+
+    fclose(saida);
+
+    // fecha o arquivo
     fclose(entrada);
 
     return 0;
