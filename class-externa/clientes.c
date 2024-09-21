@@ -6,7 +6,6 @@
 Cliente *criaCliente(int cod_cliente, char *nome, char *data_nascimento) {
 
     Cliente *c = (Cliente *) malloc(sizeof(Cliente));
-    if (c) memset(c, 0, sizeof(Cliente));
 
     c->cod_cliente = cod_cliente;
     strcpy(c->nome, nome);

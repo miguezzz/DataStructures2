@@ -248,13 +248,8 @@ int main (void) {
     Registro registros[TAMANHO_M];
 
     rewind(entrada);
-    // carrega M registros no vetor
-    for (int i = 0; i < TAMANHO_M; i++) {
-        registros[i].cliente = carregaCliente(entrada);
-        registros[i].congelado = 0;
-        printf("imprimindo...\n");
-        imprimeCliente(registros[i].cliente);
-    }
+
+    preencheVetor(entrada, registros, TAMANHO_M);
 
     // calcula a menor chave dentre os registros no vetor e a imprime
     int indice_menor_chave = menorChave(registros, TAMANHO_M);
@@ -266,10 +261,12 @@ int main (void) {
         return 1;
     }
 
-    gravaMenor(&registros[indice_menor_chave], saida);
+    salvaCliente(registros[indice_menor_chave].cliente, saida);
+
+    substituiRegistro(entrada, registros, indice_menor_chave);
 
     rewind(saida);
-    leRegistros(saida);
+    leClientes(saida);
 
     fclose(saida);
 
