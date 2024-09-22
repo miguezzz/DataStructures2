@@ -85,12 +85,15 @@ void preencheVetor(FILE *in, Registro registros[], int tamanho) {
     for (int i = 0; i < tamanho; i++) {
         registros[i].cliente = carregaCliente(in);
         registros[i].congelado = 0;
-        printf("imprimindo...\n");
-        imprimeCliente(registros[i].cliente);
+        
+        // imprimeCliente(registros[i].cliente);
     }
+
+    printf("Vetor preenchido com %d registros\n", tamanho);
 }
 
-void substituiRegistro(FILE *in, Registro registro[], int indice_menor) {
+// substitui registro pelo próximo registro do arquivo de clientes. retorna 1 se congelar e 0 caso contrário.
+int substituiRegistro(FILE *in, Registro registro[], int indice_menor) {
 
     int cod_antigo = registro[indice_menor].cliente->cod_cliente;
 
@@ -98,7 +101,24 @@ void substituiRegistro(FILE *in, Registro registro[], int indice_menor) {
     
     if (registro[indice_menor].cliente->cod_cliente < cod_antigo) {
         registro[indice_menor].congelado = 1;
+        return 1;
     } else {
         registro[indice_menor].congelado = 0;
+        return 0;
+    }
+}
+
+void selecaoSubst(FILE *in, Registro registros[], FILE *out) {
+    int congelados = 0;
+    while (congelados < M_REGISTROS) {
+
+        // calcula a menor chave dentre os registros no vetor
+        int indice_menor_chave = menorChave(registros, M_REGISTROS);
+        // printf("menor chave é %d", registros[indice_menor_chave].cliente->cod_cliente);
+
+        salvaCliente(registros[indice_menor_chave].cliente, out);
+
+        int congelou = substituiRegistro(in, registros, indice_menor_chave);
+        congelados += congelou;
     }
 }

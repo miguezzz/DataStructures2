@@ -17,4 +17,6 @@ int menorChave(Registro registros[], int tamanho);
 
 void preencheVetor(FILE *in, Registro registros[], int tamanho);
 
-void substituiRegistro(FILE *in, Registro registro[], int indice_menor);
+int substituiRegistro(FILE *in, Registro registro[], int indice_menor);
+
+void selecaoSubst(FILE *in, Registro registros[], FILE *out);

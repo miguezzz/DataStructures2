@@ -1,8 +1,6 @@
 #include "clientes.h"
 #include "registro.h"
 
-#define TAMANHO_M 6
-
 int main (void) {
 
     Cliente *c1 = criaCliente(29, "João da Silva", "01/01/1990");
@@ -225,6 +223,8 @@ int main (void) {
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    
+
     // abre o arquivo para leitura
     FILE *entrada = fopen("clientes.dat", "rb");
     if (entrada == NULL) {
@@ -232,45 +232,28 @@ int main (void) {
         return 1;
     }
 
-//     Cliente *primeiro = carregaCliente(entrada);
-//     imprimeCliente(primeiro);
-//     free(primeiro);
-
-//     Cliente *segundo = carregaCliente(entrada);
-//     if (segundo != NULL) {
-//         imprimeCliente(segundo);
-//         free(segundo);
-//     }
-
-    leClientes(entrada);
-
-    //cria um vetor de registros de tamanho M
-    Registro registros[TAMANHO_M];
-
-    rewind(entrada);
-
-    preencheVetor(entrada, registros, TAMANHO_M);
-
-    // calcula a menor chave dentre os registros no vetor e a imprime
-    int indice_menor_chave = menorChave(registros, TAMANHO_M);
-    printf("menor chave é %d", registros[indice_menor_chave].cliente->cod_cliente);
-
     FILE *saida = fopen("part1.dat", "w+b");
     if (entrada == NULL) {
         printf("Erro ao abrir o arquivo de entrada.\n");
         return 1;
     }
 
-    salvaCliente(registros[indice_menor_chave].cliente, saida);
+    // leClientes(entrada);
 
-    substituiRegistro(entrada, registros, indice_menor_chave);
+    //cria um vetor de registros de tamanho M
+    Registro registros[M_REGISTROS];
+
+    rewind(entrada);
+
+    preencheVetor(entrada, registros, M_REGISTROS);
+
+    selecaoSubst(entrada, registros, saida);
 
     rewind(saida);
     leClientes(saida);
 
     fclose(saida);
 
-    // fecha o arquivo
     fclose(entrada);
 
     return 0;

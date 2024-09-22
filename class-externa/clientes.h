@@ -7,6 +7,8 @@
 #include <stdarg.h>
 #include <limits.h>
 
+#define M_REGISTROS 6
+
 typedef struct cliente {
     int cod_cliente;
     char nome[50];
@@ -18,8 +20,6 @@ Cliente *criaCliente(int cod_cliente, char *nome, char *data_nascimento);
 void salvaCliente(Cliente *c, FILE *out);
 
 void leClientes(FILE *in);
-
-void selecaoSubst(FILE *in, FILE *out);
 
 Cliente *carregaCliente(FILE *in);
 
