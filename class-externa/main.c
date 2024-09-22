@@ -223,8 +223,6 @@ int main (void) {
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    
-
     // abre o arquivo para leitura
     FILE *entrada = fopen("clientes.dat", "rb");
     if (entrada == NULL) {
@@ -232,11 +230,7 @@ int main (void) {
         return 1;
     }
 
-    FILE *saida = fopen("part1.dat", "w+b");
-    if (entrada == NULL) {
-        printf("Erro ao abrir o arquivo de entrada.\n");
-        return 1;
-    }
+    FILE *saida;
 
     // leClientes(entrada);
 
@@ -244,13 +238,18 @@ int main (void) {
     Registro registros[M_REGISTROS];
 
     rewind(entrada);
-
     preencheVetor(entrada, registros, M_REGISTROS);
 
-    selecaoSubst(entrada, registros, saida);
+    int particaoAtual = 1;
+    while (particaoAtual <= 5) {
+        saida = criaParticao(particaoAtual);
+        selecaoSubst(entrada, registros, saida);
+        descongelaRegistros(registros);
+        particaoAtual++;
 
-    rewind(saida);
-    leClientes(saida);
+        rewind(saida);
+        leClientes(saida);
+    }
 
     fclose(saida);
 

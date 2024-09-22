@@ -30,6 +30,7 @@ Cliente *carregaCliente(FILE *in) {
     }
 
     if (fread(&c->cod_cliente, sizeof(int), 1, in) != 1) {
+        printf("\nFim do arquivo...\n");
         free(c);
         return NULL; // Falha na leitura do cod_cliente
     }

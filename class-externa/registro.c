@@ -98,6 +98,11 @@ int substituiRegistro(FILE *in, Registro registro[], int indice_menor) {
     int cod_antigo = registro[indice_menor].cliente->cod_cliente;
 
     registro[indice_menor].cliente = carregaCliente(in);
+
+    if (registro[indice_menor].cliente == NULL) {
+        printf("\nFim do arquivo de entrada!\n");
+        return 2;
+    }
     
     if (registro[indice_menor].cliente->cod_cliente < cod_antigo) {
         registro[indice_menor].congelado = 1;
@@ -108,17 +113,59 @@ int substituiRegistro(FILE *in, Registro registro[], int indice_menor) {
     }
 }
 
+// algoritmo de classificação utilizando seleção por substituição.
 void selecaoSubst(FILE *in, Registro registros[], FILE *out) {
+
+    int desvioDeRota = 0;
     int congelados = 0;
     while (congelados < M_REGISTROS) {
 
-        // calcula a menor chave dentre os registros no vetor
-        int indice_menor_chave = menorChave(registros, M_REGISTROS);
-        // printf("menor chave é %d", registros[indice_menor_chave].cliente->cod_cliente);
+        if (desvioDeRota == 0) {
 
-        salvaCliente(registros[indice_menor_chave].cliente, out);
+            // calcula a menor chave dentre os registros no vetor
+            int indice_menor_chave = menorChave(registros, M_REGISTROS);
+            // printf("menor chave é %d", registros[indice_menor_chave].cliente->cod_cliente);
 
-        int congelou = substituiRegistro(in, registros, indice_menor_chave);
-        congelados += congelou;
+            salvaCliente(registros[indice_menor_chave].cliente, out);
+
+            int congelou = substituiRegistro(in, registros, indice_menor_chave);
+            congelados += congelou;
+            
+            // verifica o fim do arquivo de entrada e para de tentar substituir caso tenha acabado
+            if (congelou == 2) {
+                desvioDeRota = 1;
+            }
+
+        } else {
+
+            for (int i = 0; i < M_REGISTROS; i++) {
+                // calcula a menor chave dentre os registros no vetor
+                int indice_menor_chave = menorChave(registros, M_REGISTROS);
+                // printf("menor chave é %d", registros[indice_menor_chave].cliente->cod_cliente);
+
+                salvaCliente(registros[indice_menor_chave].cliente, out);
+            }
+
+            // encerra o ciclo
+            break;
+        }
     }
+}
+
+// descongela todos os registros para a próxima partição da seleção.
+void descongelaRegistros(Registro registros[]) {
+    for (int i = 0; i < M_REGISTROS; i++) {
+        registros[i].congelado = 0;
+    }
+}
+
+FILE *criaParticao(int particaoAtual) {
+    
+    FILE *particao;
+
+    char filename[20];
+    sprintf(filename, "part%d.dat", particaoAtual);
+    particao = fopen(filename, "w+b");
+
+    return particao;
 }
