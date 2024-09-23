@@ -24,9 +24,11 @@ void salvaCliente(Cliente *c, FILE *out) {
 
 // Função para carregar clientes em memória
 Cliente *carregaCliente(FILE *in) {
+
     Cliente *c = (Cliente *) malloc(sizeof(Cliente));
     if (c == NULL) {
-        return NULL; // Falha ao alocar memória
+        free(c);
+        return NULL; // falha ao puxar cliente (fim do arquivo)
     }
 
     if (fread(&c->cod_cliente, sizeof(int), 1, in) != 1) {

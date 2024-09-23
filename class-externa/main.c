@@ -248,7 +248,7 @@ int main (void) {
         particaoAtual++;
 
         rewind(saida);
-        leClientes(saida);
+        //leClientes(saida);
     }
 
     fclose(saida);
