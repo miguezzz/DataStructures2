@@ -57,6 +57,7 @@ int main (void) {
     Cliente *c52 = criaCliente(47, "Juliana Martins", "25/04/1987");
     Cliente *c53 = criaCliente(31, "Marcos Souza", "24/05/1995");
     Cliente *c54 = criaCliente(80, "tangas", "69/24/6969");
+    Cliente *c55 = criaCliente(91, "vmigu", "12/12/1212");
 
 
     FILE *arquivo = fopen("clientes.dat", "w+b");
@@ -223,6 +224,9 @@ int main (void) {
     salvaCliente(c54, arquivo);
     free(c54);
 
+    salvaCliente(c55, arquivo);
+    free(c55);
+
     fclose(arquivo);
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -245,8 +249,9 @@ int main (void) {
     preencheVetor(entrada, registros, M_REGISTROS);
 
     int particaoAtual = 1;
-    while (particaoAtual <= 5) {
+    while (!feof(entrada)) {
         saida = criaParticao(particaoAtual);
+        printf("\nPartição %d:\n", particaoAtual);
         selecaoSubst(entrada, registros, saida);
         descongelaRegistros(registros);
         particaoAtual++;
