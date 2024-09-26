@@ -22,7 +22,7 @@ int menorChave(Registro registros[], int tamanho) {
 
     for (int i = 0; i < tamanho; i++) {
         // se o registro não estiver congelado e seu cod_cliente for menor do que o menor número atual,
-        if (!registros[i].congelado && registros[i].cliente->cod_cliente < menor) {
+        if (registros[i].cliente!=NULL && !registros[i].congelado && registros[i].cliente->cod_cliente < menor) {
             // menor cod_cliente vira o cod_cliente atual
             menor = registros[i].cliente->cod_cliente;
             // e o indice a ser retornado vira o atual
@@ -90,20 +90,31 @@ void selecaoSubst(FILE *in, Registro registros[], FILE *out) {
             }
 
         } else {
-
+                        //se testar com 5 funciona//
             for (int i = 0; i < M_REGISTROS; i++) {
                 // calcula a menor chave dentre os registros no vetor
                 int indice_menor_chave = menorChave(registros, M_REGISTROS);
-                // printf("menor chave é %d", registros[indice_menor_chave].cliente->cod_cliente);
+                printf("menor chave é %d\n", registros[indice_menor_chave].cliente->cod_cliente);
 
                 salvaCliente(registros[indice_menor_chave].cliente, out);
+                registros[indice_menor_chave].cliente=NULL;
             }
+
+            // int new_congelados = 0;
+            // while(   // !todos congelados    ) 
+            // {
+            //     int indice_menor_chave = menorChave(registros, M_REGISTROS);
+            //     registros[indice_menor_chave].congelado = 1;
+
+            //     salvaCliente(registros[indice_menor_chave].cliente, out);
+            //     registros[indice_menor_chave].cliente=NULL;
+            // }
 
             // encerra o ciclo
             break;
         }
     }
-}
+} 
 
 // descongela todos os registros para a próxima partição da seleção.
 void descongelaRegistros(Registro registros[]) {
