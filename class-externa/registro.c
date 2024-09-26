@@ -91,7 +91,7 @@ void selecaoSubst(FILE *in, Registro registros[], FILE *out) {
 
         } else {
 
-            for (int i = 0; i < M_REGISTROS; i++) {
+            for (int i = 0; i < 5; i++) {
                 // calcula a menor chave dentre os registros no vetor
                 int indice_menor_chave = menorChave(registros, M_REGISTROS);
                 printf("menor chave é %d", registros[indice_menor_chave].cliente->cod_cliente);

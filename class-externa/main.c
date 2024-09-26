@@ -56,6 +56,7 @@ int main (void) {
     Cliente *c51 = criaCliente(36, "Camila Oliveira", "06/03/1996");
     Cliente *c52 = criaCliente(47, "Juliana Martins", "25/04/1987");
     Cliente *c53 = criaCliente(31, "Marcos Souza", "24/05/1995");
+    Cliente *c54 = criaCliente(80, "Tangas", "11/11/1111");
 
 
     FILE *arquivo = fopen("clientes.dat", "w+b");
@@ -218,6 +219,9 @@ int main (void) {
 
     salvaCliente(c53, arquivo);
     free(c53);
+
+    salvaCliente(c54, arquivo);
+    free(c54);
 
     fclose(arquivo);
 
