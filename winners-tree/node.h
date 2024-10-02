@@ -1,12 +1,17 @@
-#include "../class-externa/clientes.h"
-//#include "../class-externa/clientes.c"
-
-// #include "../class-externa/registro.h"
-// #include "../class-externa/registro.c"
+#ifndef NODE_H
+#define NODE_H
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+typedef struct cliente {
+    int cod_cliente;
+    char nome[50];
+    char data_nascimento[20]; // DD/MM/AAAA
+} Cliente;
+
+Cliente *carregaCliente(FILE *in);
 
 typedef struct node {
     Cliente *cliente;
@@ -14,14 +19,12 @@ typedef struct node {
     struct node *right;
 } Node;
 
-void criaFolhas(FILE *in);
+Node *criaFolhas(FILE *in);
 
 Node *criaNode(Cliente *cliente);
 
-void imprimeNode(Node *node);
+void arvoreVencedores(Node* nodes[], int numFolhas, int tree[], int startIdx);
 
-void imprimeArvore(Node *node);
+int encontrarVencedor(int tree[]);
 
-void salvaNode(Node *node, FILE *out);
-
-void salvaArvore(Node *node, FILE *out);
+#endif
