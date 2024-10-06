@@ -31,21 +31,32 @@ Cliente *carregaCliente(FILE *in) {
     return c;
 }
 
-void arvoreVencedores(Node* nodes[], int numFolhas, int arvore[], int startIdx) {
+void salvaCliente(Cliente *c, FILE *out) {
+    if (fwrite(&c->cod_cliente, sizeof(int), 1, out) < 1) {
+        free(c);
+        exit(1);
+    }
+    fwrite(c->nome, sizeof(char), 50, out);
+    fwrite(c->data_nascimento, sizeof(char), 20, out);
+}
+
+// Ao final do algoritmo, o nó raiz da árvore de vencedores contém o índice do nó folha com o menor cod_cliente
+void arvoreVencedores(Node* nodes[], int numFolhas, int arvore[], int startIdx, int* fimArquivo) {
     // Inicializa as folhas da árvore
     // Cada folha da árvore de vencedores é inicializada com o índice correspondente ao nó folha
     for (int i = 0; i < numFolhas; i++) {
         arvore[startIdx + i] = i;
     }
 
-    // constrói a árvore de vencedores a partir das folhas.
+    // Constrói a árvore de vencedores a partir das folhas
     for (int i = startIdx - 1; i >= 0; i--) {
-        // Índices dos filhos esquerdo e direito
         int left = arvore[2 * i + 1];
         int right = arvore[2 * i + 2];
-
-        // Compara os cod_cliente dos filhos e armazena o índice do menor no pai
-        if (nodes[left]->cliente->cod_cliente <= nodes[right]->cliente->cod_cliente) {
+        if (fimArquivo[left]) {
+            arvore[i] = right;
+        } else if (fimArquivo[right]) {
+            arvore[i] = left;
+        } else if (nodes[left]->cliente->cod_cliente <= nodes[right]->cliente->cod_cliente) {
             arvore[i] = left;
         } else {
             arvore[i] = right;
@@ -53,6 +64,7 @@ void arvoreVencedores(Node* nodes[], int numFolhas, int arvore[], int startIdx) 
     }
 }
 
+// busca o vencedor na árvore de vencedores
 int encontrarVencedor(int arvore[]) {
     return arvore[0];
 }

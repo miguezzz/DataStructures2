@@ -12,6 +12,7 @@ typedef struct cliente {
 } Cliente;
 
 Cliente *carregaCliente(FILE *in);
+void salvaCliente(Cliente *c, FILE *out);
 
 typedef struct node {
     Cliente *cliente;
@@ -23,7 +24,7 @@ Node *criaFolhas(FILE *in);
 
 Node *criaNode(Cliente *cliente);
 
-void arvoreVencedores(Node* nodes[], int numFolhas, int tree[], int startIdx);
+void arvoreVencedores(Node* nodes[], int numFolhas, int tree[], int startIdx, int* fimArquivo);
 
 int encontrarVencedor(int tree[]);
 
