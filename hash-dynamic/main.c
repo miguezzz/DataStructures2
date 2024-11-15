@@ -1,33 +1,39 @@
 #include "clientes.h"
 
 int main() {
-    HashTable *hashTable = createHashTable(M_REGISTROS);
+    // Cria a tabela hash
+    HashTable *hashTable = createHashTable();
 
-    insertCliente(hashTable, 1, "Cliente 1");
-    insertCliente(hashTable, 2, "Cliente 2");
-    insertCliente(hashTable, 3, "Cliente 3");
-    insertCliente(hashTable, 4, "Cliente 4");
-    insertCliente(hashTable, 5, "Cliente 5");
-    insertCliente(hashTable, 6, "Cliente 6");
-    insertCliente(hashTable, 7, "Cliente 7");
-    insertCliente(hashTable, 10, "Cliente 10");
-    insertCliente(hashTable, 12, "Cliente 12");
+    // Insere alguns clientes
+    insertCliente(hashTable, 49, "<João>");
+    insertCliente(hashTable, 51, "<Carla>");
+    insertCliente(hashTable, 59, "<Maria>");
+    insertCliente(hashTable, 103, "<Ana>");
+    insertCliente(hashTable, 3, "<José>");
+    insertCliente(hashTable, 87, "<Bia>");
 
-    Cliente *cliente = searchCliente(hashTable, 2);
+    // exibe a tabela hash
+    printf("Clientes na tabela hash:\n");
+
+    printHash(hashTable);
+
+    // busca por um cliente específico
+    int cod_cliente = 3;
+    Cliente *cliente = searchCliente(hashTable, cod_cliente);
     if (cliente) {
-        printf("Cliente encontrado: %s\n", cliente->nome);
+        printf("\nCliente encontrado: %s (Código: %d)\n", cliente->nome, cliente->cod_cliente);
+        free(cliente);
     } else {
-        printf("Cliente não encontrado\n");
+        printf("\nCliente com código %d não encontrado\n", cod_cliente);
     }
 
-    // removeCliente(hashTable, 2);
-    cliente = searchCliente(hashTable, 6);
-    if (cliente) {
-        printf("Cliente encontrado: %s\n", cliente->nome);
-    } else {
-        printf("Cliente não encontrado\n");
-    }
+    // remove um cliente
+    printf("\nRemovendo cliente com código %d...\n", cod_cliente);
+    removeCliente(hashTable, cod_cliente);
 
-    freeHashTable(hashTable);
+    // exibe todos os clientes na tabela hash após a remoção
+    printf("\nClientes na tabela hash após a remoção:\n");
+    printHash(hashTable);
+
     return 0;
 }

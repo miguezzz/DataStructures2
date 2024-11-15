@@ -4,30 +4,35 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
-#define M_REGISTROS 6
-#define LOAD_FACTOR_THRESHOLD 0.75
+#define M_REGISTROS 7
+#define LOAD_FACTOR 1
 
 typedef struct cliente {
     int cod_cliente;
     char nome[100];
-    struct cliente *next;
+    long next_offset; // Offset do próximo cliente no arquivo
+    // Cliente *next; // Ponteiro para o próximo cliente na memória
 } Cliente;
 
 typedef struct {
-    Cliente **table;
-    int size;
-    int count;
-    int l;
-    int p;
+    Cliente **table; // array de ponteiros para clientes
+    int size; // tamanho da tabela
+    int clientCount; // quantidade de clientes
+    int l; // vezes expandidas
+    int p; // compartimento atual para expansão
 } HashTable;
 
-HashTable *createHashTable(int size);
-void freeHashTable(HashTable *hashTable);
-unsigned int hash(int key, int size, int l);
+HashTable *createHashTable();
+void printHash(HashTable *hashTable);
+int hash(int key, int l, int p);
 void insertCliente(HashTable *hashTable, int cod_cliente, char *nome);
+void salvaCliente(Cliente *c, FILE *out);
 Cliente *searchCliente(HashTable *hashTable, int cod_cliente);
 void removeCliente(HashTable *hashTable, int cod_cliente);
-void resizeHashTable(HashTable *hashTable);
+void expandTable(HashTable *hashTable);
+Cliente *carregaCliente(FILE *in, long offset);
+void imprimeCliente(Cliente *c);
 
 #endif
