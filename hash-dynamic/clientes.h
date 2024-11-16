@@ -28,10 +28,10 @@ HashTable *createHashTable();
 void printHash(HashTable *hashTable);
 int hash(int key, int l, int p);
 void insertCliente(HashTable *hashTable, int cod_cliente, char *nome);
+void expandTable(HashTable *hashTable);
 void salvaCliente(Cliente *c, FILE *out);
 Cliente *searchCliente(HashTable *hashTable, int cod_cliente);
 void removeCliente(HashTable *hashTable, int cod_cliente);
-void expandTable(HashTable *hashTable);
 Cliente *carregaCliente(FILE *in, long offset);
 void imprimeCliente(Cliente *c);
 

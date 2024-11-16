@@ -50,7 +50,7 @@ void printHash(HashTable *hashTable) {
 int hash(int key, int l, int p) {
 
     int h0 = key % M_REGISTROS;
-    if (h0 < p) {
+    if (h0 < p) { // algoritmo (ultimo slide de acesso direto)
         return key % M_REGISTROS * pow(2, l);
     }
     
@@ -61,6 +61,13 @@ int hash(int key, int l, int p) {
 void insertCliente(HashTable *hashTable, int cod_cliente, char *nome) {
     
     int index = hash(cod_cliente, hashTable->l, hashTable->p);
+
+    if(hashTable->clientCount / hashTable->size >= LOAD_FACTOR) {
+        printf("vai ter que expandir. clientCount = %d\n", hashTable->clientCount);
+        expandTable(hashTable);
+        index = hash(cod_cliente, hashTable->l, hashTable->p); // recalcula index depois da expansão
+    }
+
     char filename[20];
     sprintf(filename, "storage_%d.dat", index);
 
@@ -109,6 +116,111 @@ void insertCliente(HashTable *hashTable, int cod_cliente, char *nome) {
     hashTable->clientCount++;
 }
 
+// expande a tabela hash
+void expandTable(HashTable *hashTable) {
+
+    int newSize = hashTable->size + 1; // novo tamanho da tabela
+
+    Cliente **newTable = (Cliente **)malloc(newSize * sizeof(Cliente *));
+    for (int i = 0; i < newSize; i++) {
+        newTable[i] = NULL;
+    }
+
+    // refaz a hash para os clientes da tabela antiga
+    for (int i = 0; i < hashTable->size; i++) {
+        if (hashTable->table[i] != NULL) { // se for nulo não há clientes nesse compartimento
+            char oldFilename[20];
+            sprintf(oldFilename, "storage_%d.dat", i);
+            FILE *oldFile = fopen(oldFilename, "rb");
+
+            if (!oldFile) {
+                perror("Erro ao abrir arquivo");
+                exit(1);
+            }
+
+            long offset;
+            while (fread(&offset, sizeof(long), 1, oldFile) == 1) { // enquanto houver clientes no compartimento
+                printf("lendo compartimento %d\n", i);
+
+                printf("tenando carregar o cliente\n");
+                Cliente *cliente = carregaCliente(oldFile, offset);
+                if(!cliente) {
+                    printf("cliente não carregado\n");
+                    break;
+                }
+                printf("cliente carregado\n");
+                
+                printf("Calculando novo índice para o cod %d\n", cliente->cod_cliente);
+                int newIndex = hash(cliente->cod_cliente, hashTable->l+1, hashTable->p); // calcula o novo índice
+                printf("hash caiu no índice %d\n", newIndex);
+
+                char newFilename[20];
+                sprintf(newFilename, "storage_%d.dat", newIndex);
+                FILE *newFile = fopen(newFilename, "ab+");
+                
+                if (!newFile) {
+                    perror("Erro ao abrir arquivo");
+                    exit(1);
+                }
+
+                fseek(newFile, 0, SEEK_END); // move o ponteiro para o final do arquivo
+                long newOffset = ftell(newFile); // pega o offset do novo cliente
+
+                // escreve o novo cliente no arquivo
+                fwrite(&cliente->cod_cliente, sizeof(int), 1, newFile);
+                printf("Escrevi o código\n");
+                fwrite(cliente->nome, sizeof(char), 100, newFile);
+                printf("Escrevi o nome\n");
+                fwrite(&cliente->next_offset, sizeof(long), 1, newFile);
+                printf("Escrevi o offset\n");
+                fclose(newFile);
+
+                if (newTable[newIndex] == NULL) { // se o novo índice estiver vazio
+                    newTable[newIndex] = (Cliente *)newOffset; // apenas aponta para o novo cliente
+                    printf("Atribui o offset ao compartimento da hash\n");
+                } else {
+                    printf("Entrei no else. deu colisão!\n");
+                    FILE *updateFile = fopen(newFilename, "rb+");
+
+                    if (!updateFile) {
+                        perror("Failed to open update file");
+                        exit(EXIT_FAILURE);
+                    }
+
+                    long current_offset = (long)newTable[newIndex];
+                    Cliente *current = carregaCliente(updateFile, current_offset);
+                    while (current->next_offset != -1) {
+                        current_offset = current->next_offset;
+                        current = carregaCliente(updateFile, current_offset);
+                    }
+                    current->next_offset = newOffset;
+                    fseek(updateFile, current_offset + sizeof(int) + sizeof(char) * 100, SEEK_SET);
+                    fwrite(&newOffset, sizeof(long), 1, updateFile);
+                    fclose(updateFile);
+                }
+
+                // free(cliente);
+            }
+
+            fclose(oldFile);
+        }
+        printf("Cheguei no final\n");
+    }
+
+    free(hashTable->table);
+    hashTable->table = newTable;
+    hashTable->size = newSize;
+
+    // Atualiza os parâmetros l e p
+    if (newSize == pow(2, hashTable->l + 1) * M_REGISTROS) {
+        hashTable->l++;
+        hashTable->p = 0;
+    } else {
+        printf("atualizei o p\n");
+        hashTable->p++;
+    }
+}
+
 // Salva um cliente num arquivo externo
 void salvaCliente(Cliente *c, FILE *out) {
 
@@ -131,6 +243,7 @@ void salvaCliente(Cliente *c, FILE *out) {
 Cliente *searchCliente(HashTable *hashTable, int cod_cliente) {
     
     int index = hash(cod_cliente, hashTable->l, hashTable->p);
+
     char filename[20];
     sprintf(filename, "storage_%d.dat", index);
 
@@ -140,7 +253,7 @@ Cliente *searchCliente(HashTable *hashTable, int cod_cliente) {
         return NULL;
     }
 
-    int offset = (long)hashTable->table[index];
+    long offset = (long)hashTable->table[index]; // busca a posição inicial do cliente
     Cliente *cliente = carregaCliente(file, offset);
 
     while (cliente) {
@@ -200,91 +313,6 @@ void removeCliente(HashTable *hashTable, int cod_cliente) {
     }
 
     fclose(file);
-}
-
-// expande a tabela hash
-void expandTable(HashTable *hashTable) {
-
-    int newSize = hashTable->size + 1;
-
-    Cliente **newTable = (Cliente **)malloc(newSize * sizeof(Cliente *));
-    for (int i = 0; i < newSize; i++) {
-        newTable[i] = NULL;
-    }
-
-    // refaz a hash para os clientes da tabela antiga
-    for (int i = 0; i < hashTable->size; i++) {
-        if (hashTable->table[i] != NULL) {
-            char oldFilename[20];
-            sprintf(oldFilename, "storage_%d.dat", i);
-            FILE *oldFile = fopen(oldFilename, "rb");
-            if (!oldFile) {
-                perror("Failed to open old file");
-                exit(EXIT_FAILURE);
-            }
-
-            long offset;
-            while (fread(&offset, sizeof(long), 1, oldFile) == 1) { // lê o offset do cliente
-                Cliente *cliente = carregaCliente(oldFile, offset);
-                int newIndex = hash(cliente->cod_cliente, hashTable->l, hashTable->p); // calcula o novo índice
-
-                char newFilename[20];
-                sprintf(newFilename, "storage_%d.dat", newIndex);
-                FILE *newFile = fopen(newFilename, "ab+");
-                if (!newFile) {
-                    perror("Failed to open new file");
-                    exit(EXIT_FAILURE);
-                }
-
-                fseek(newFile, 0, SEEK_END); // move o ponteiro para o final do arquivo
-                long newOffset = ftell(newFile); // pega o offset do novo cliente
-
-                // escreve o novo cliente no arquivo
-                fwrite(&cliente->cod_cliente, sizeof(int), 1, newFile);
-                fwrite(cliente->nome, sizeof(char), 100, newFile);
-                fwrite(&cliente->next_offset, sizeof(long), 1, newFile);
-                fclose(newFile);
-
-                if (newTable[newIndex] == NULL) { // se o novo índice estiver vazio
-                    newTable[newIndex] = (Cliente *)newOffset; // apenas aponta para o novo cliente
-                } else {
-                    FILE *updateFile = fopen(newFilename, "rb+");
-
-                    if (!updateFile) {
-                        perror("Failed to open update file");
-                        exit(EXIT_FAILURE);
-                    }
-
-                    long current_offset = (long)newTable[newIndex];
-                    Cliente *current = carregaCliente(updateFile, current_offset);
-                    while (current->next_offset != -1) {
-                        current_offset = current->next_offset;
-                        current = carregaCliente(updateFile, current_offset);
-                    }
-                    current->next_offset = newOffset;
-                    fseek(updateFile, current_offset + sizeof(int) + sizeof(char) * 100, SEEK_SET);
-                    fwrite(&newOffset, sizeof(long), 1, updateFile);
-                    fclose(updateFile);
-                }
-
-                free(cliente);
-            }
-
-            fclose(oldFile);
-        }
-    }
-
-    free(hashTable->table);
-    hashTable->table = newTable;
-    hashTable->size = newSize;
-
-    // Atualiza os parâmetros l e p
-    if (newSize == pow(2, hashTable->l + 1) * M_REGISTROS) {
-        hashTable->l++;
-        hashTable->p = 0;
-    } else {
-        hashTable->p++;
-    }
 }
 
 // Função para carregar clientes em memória
