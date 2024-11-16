@@ -5,7 +5,7 @@ int main(void) {
     FILE** arquivos = (FILE**) malloc(numParticoes * sizeof(FILE*));
     const char* nomesArquivos[] = {"part1.dat", "part2.dat", "part3.dat", "part4.dat", "part5.dat"};
 
-    // Abre os arquivos de entrada
+    // Abre os arquivos de entrada. se tiver erro libera todos os arquivos
     for (int i = 0; i < numParticoes; i++) {
         arquivos[i] = fopen(nomesArquivos[i], "rb");
         if (arquivos[i] == NULL) {
