@@ -1,19 +1,6 @@
 #include "registro.h"
 #include "clientes.h"
 
-// void leRegistros(FILE *in) {
-
-//     printf("\n\nLendo registros do arquivo...\n\n");
-//     //rewind(in);
-//     int contador = 0;
-//     Registro *r;
-//     while ((r = carregaRegistro(in)) != NULL) {
-//         printf("%d\n", ++contador);
-//         imprimeRegistro(r);
-//         free(r);
-//     }
-// }
-
 // Função para encontrar o índice do menor cliente não congelado
 int menorChave(Registro registros[], int tamanho) {
 
@@ -32,7 +19,7 @@ int menorChave(Registro registros[], int tamanho) {
     return indice;
 }
 
-// preenche M registros no vetor
+// preenche com os primeiros M registros no vetor
 void preencheVetor(FILE *in, Registro registros[], int tamanho) {
 
     for (int i = 0; i < tamanho; i++) {
@@ -47,20 +34,24 @@ void preencheVetor(FILE *in, Registro registros[], int tamanho) {
 
 // substitui registro pelo próximo registro do arquivo de clientes. retorna 1 se congelar e 0 caso contrário.
 int substituiRegistro(FILE *in, Registro registro[], int indice_menor) {
-
+    
+    
+    // salva o cod_cliente do registro atual
     int cod_antigo = registro[indice_menor].cliente->cod_cliente;
 
     registro[indice_menor].cliente = carregaCliente(in);
 
+    // se o proximo cliente for null, fim do arquivo! retorna 2.
     if (registro[indice_menor].cliente == NULL) {
         // printf("\nFim do arquivo de entrada!\n");
         return 2;
     }
     
+    // se o cod do proximo for menor, o registro congela e retorna 1.
     if (registro[indice_menor].cliente->cod_cliente < cod_antigo) {
         registro[indice_menor].congelado = 1;
         return 1;
-    } else {
+    } else { // se não for menor, retorna 0.
         registro[indice_menor].congelado = 0;
         return 0;
     }
@@ -69,14 +60,17 @@ int substituiRegistro(FILE *in, Registro registro[], int indice_menor) {
 // algoritmo de classificação utilizando seleção por substituição.
 void selecaoSubst(FILE *in, Registro registros[], FILE *out) {
 
+    // começamos com 0 congelados. a partição fecha quando tiverem M congelados.
     int congelados = 0;
     while (congelados < M_REGISTROS) {
 
-        // calcula a menor chave dentre os registros no vetor
+        // encontra o indice da menor chave dentre os registros no vetor
         int indice_menor_chave = menorChave(registros, M_REGISTROS);
         printf("menor chave é %d\n", registros[indice_menor_chave].cliente->cod_cliente);
 
+        // salva o cliente na partição de saida
         salvaCliente(registros[indice_menor_chave].cliente, out);
+
 
         int congelou = substituiRegistro(in, registros, indice_menor_chave);
         congelados += congelou;
@@ -85,6 +79,7 @@ void selecaoSubst(FILE *in, Registro registros[], FILE *out) {
         if (congelou == 2) {
             congelados = 1;
 
+            // se acabou o arquivo de clientes, sobram apenas 6 clientes no registro.
             for (int i = 0; i < M_REGISTROS - 1; i++) {
                 // calcula a menor chave dentre os registros no vetor
                 int indice_menor_chave = menorChave(registros, M_REGISTROS);
@@ -92,12 +87,10 @@ void selecaoSubst(FILE *in, Registro registros[], FILE *out) {
 
                 salvaCliente(registros[indice_menor_chave].cliente, out);
                 
-                // Marca o registro como congelado
+                // Marca o registro como congelado para evitar leitura repetida
                 registros[indice_menor_chave].congelado = 1;
                 congelados++;
             }
-
-            // congelados = M_REGISTROS;
         }
     }
 } 
@@ -109,6 +102,7 @@ void descongelaRegistros(Registro registros[]) {
     }
 }
 
+// cria uma partição de saida
 FILE *criaParticao(int particaoAtual) {
     
     FILE *particao;
