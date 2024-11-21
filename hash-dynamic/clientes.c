@@ -60,7 +60,7 @@ int hash(int key, int l, int p) {
 // insere um cliente na tabela hash
 void insertCliente(HashTable *hashTable, int cod_cliente, char *nome) {
     
-    int index = hash(cod_cliente, hashTable->l, hashTable->p);
+    int index = hash(cod_cliente, hashTable->l, hashTable->p); // calcula o índice do novo cliente
 
     if(hashTable->clientCount / hashTable->size >= LOAD_FACTOR) {
         printf("vai ter que expandir. clientCount = %d\n", hashTable->clientCount);
@@ -69,7 +69,7 @@ void insertCliente(HashTable *hashTable, int cod_cliente, char *nome) {
     }
 
     char filename[20];
-    sprintf(filename, "storage_%d.dat", index);
+    sprintf(filename, "storage_%d.dat", index); // nome do arquivo para o compartimento (de acordo com a hash)
 
     FILE *file = fopen(filename, "ab+");
     if (!file) {
@@ -77,43 +77,45 @@ void insertCliente(HashTable *hashTable, int cod_cliente, char *nome) {
         exit(EXIT_FAILURE);
     }
 
+    // aloca memória para o novo cliente e preenche os campos com os argumentos
     Cliente *newCliente = (Cliente *)malloc(sizeof(Cliente));
     newCliente->cod_cliente = cod_cliente;
     strcpy(newCliente->nome, nome);
     newCliente->next_offset = -1;
 
-    // Write the new client to the file and store the offset
-    fseek(file, 0, SEEK_END);
-    long offset = ftell(file);
+    fseek(file, 0, SEEK_END); // move o ponteiro para o final do arquivo
+    long offset = ftell(file); // calcula a posição inicial do novo cliente (que também é o final atual do arquivo)
+    // escreve o novo cliente no arquivo com os campos cod_cliente, nome e next_offset
     fwrite(&newCliente->cod_cliente, sizeof(int), 1, file);
     fwrite(newCliente->nome, sizeof(char), 100, file);
     fwrite(&newCliente->next_offset, sizeof(long), 1, file);
-    fclose(file);
+    fclose(file); // fecha o arquivo
 
-    // Update the hash table to point to the start of the file if it's the first entry
-    if (hashTable->table[index] == NULL) {
-        hashTable->table[index] = (Cliente *)offset;
-    } else {
-        // Update the next_offset of the last client in the list
-        file = fopen(filename, "rb+");
+    if (hashTable->table[index] == NULL) { // se o compartimento estiver vazio
+        hashTable->table[index] = (Cliente *)offset; // apenas aponta para o novo cliente
+    } else { // se colidir
+        
+        file = fopen(filename, "rb+"); // abre o arquivo para atualização de ponteiros
         if (!file) {
             perror("Failed to open file");
             exit(EXIT_FAILURE);
         }
-        long current_offset = (long)hashTable->table[index];
+
+        long current_offset = (long)hashTable->table[index]; // pega o offset do primeiro cliente para iniciar a busca pelo final antigo e atualizar o ponteiro para o próximo cliente
         Cliente *current = carregaCliente(file, current_offset);
-        while (current->next_offset != -1) {
-            current_offset = current->next_offset;
-            current = carregaCliente(file, current_offset);
+        while (current->next_offset != -1) { // enquanto houver clientes no compartimento
+            current_offset = current->next_offset; // pega o offset do próximo cliente
+            current = carregaCliente(file, current_offset); // e carrega o próximo cliente
         }
-        current->next_offset = offset;
-        fseek(file, current_offset + sizeof(int) + sizeof(char) * 100, SEEK_SET);
-        fwrite(&offset, sizeof(long), 1, file);
-        fclose(file);
+        // quando chegar ao antigo final do arquivo, atualiza o ponteiro para o próximo cliente
+        current->next_offset = offset; // aponta o último cliente para o novo cliente
+        fseek(file, current_offset + sizeof(int) + sizeof(char) * 100, SEEK_SET); // move o ponteiro para o final do último cliente (antes do next_offset)
+        fwrite(&offset, sizeof(long), 1, file); // escreve o novo offset
+        fclose(file); // fecha o arquivo
     }
 
-    free(newCliente);
-    hashTable->clientCount++;
+    free(newCliente); // libera a memória alocada para o novo cliente
+    hashTable->clientCount++; // incrementa a quantidade de clientes na tabela para gerência de expansão (load factor)
 }
 
 // expande a tabela hash
