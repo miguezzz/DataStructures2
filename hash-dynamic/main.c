@@ -12,13 +12,26 @@ int main() {
     insertCliente(hashTable, 3, "<José>");
     insertCliente(hashTable, 87, "<Bia>");
     insertCliente(hashTable, 7, "<Carlos>");
+
+    printHash(hashTable);
+
     insertCliente(hashTable, 8, "<Jorge>");
-    // insertCliente(hashTable, 14, "<Carol>");
+    insertCliente(hashTable, 14, "<Carol>");
     // insertCliente(hashTable, 15, "<Pedro>");
 
+    // abre os arquivos de armazenamento
+    // FILE *storage0 = fopen("storage_0.dat", "rb");
+    // FILE *storage1 = fopen("storage_1.dat", "rb");
+    // FILE *storage2 = fopen("storage_2.dat", "rb");
+    // FILE *storage3 = fopen("storage_3.dat", "rb");
+    // FILE *storage4 = fopen("storage_4.dat", "rb");
+    // FILE *storage5 = fopen("storage_5.dat", "rb");
+    // FILE *storage6 = fopen("storage_6.dat", "rb");
 
     // exibe a tabela hash
     printf("Clientes na tabela hash:\n");
+
+    // removeCliente(hashTable, 3);
 
     printHash(hashTable);
 
